@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Araling Panlipunan - Pista sa Komunidad (Reviewer)</title>
+<style>
+  :root{
+    --bg:#f6f9fb;
+    --card:#ffffff;
+    --accent:#2a4d69;
+    --accent-2:#5a8fb8;
+    --muted:#6b7280;
+    --correct:#b7e1a1;
+    --wrong:#f6b0a0;
+    --explain-bg:#eef6ff;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: linear-gradient(180deg,var(--bg),#ffffff);
+    color:#12202a;
+    padding:24px;
+    display:flex;
+    justify-content:center;
+  }
+
+  .container{
+    width:100%;
+    max-width:980px;
+    background:var(--card);
+    border-radius:14px;
+    box-shadow:0 8px 30px rgba(10,25,40,0.08);
+    padding:26px;
+  }
+
+  header{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    margin-bottom:12px;
+  }
+
+  .logo{
+    width:56px;
+    height:56px;
+    border-radius:10px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+    font-weight:700;
+    font-size:18px;
+  }
+
+  h1{
+    margin:0;
+    font-size:20px;
+    color:var(--accent);
+  }
+
+  p.lead{
+    margin:6px 0 18px 72px;
+    color:var(--muted);
+    font-size:14px;
+  }
+
+  .meta{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    margin-bottom:18px;
+  }
+
+  .chip{
+    background:#f1f6fb;
+    color:var(--accent);
+    padding:6px 10px;
+    border-radius:999px;
+    font-size:13px;
+  }
+
+  /* progress */
+  .progress-area{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:18px;
+  }
+
+  .progress-text{ color:var(--muted); font-size:14px; min-width:160px }
+  .progress-bar{
+    flex:1;
+    height:10px;
+    background:#e6f0fb;
+    border-radius:999px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    background:var(--accent);
+    transition:width .35s ease;
+  }
+
+  /* card */
+  .quiz-card{
+    background:#fff;
+    border-radius:12px;
+    padding:18px;
+    border:1px solid #eef6ff;
+  }
+
+  .question{
+    font-size:18px;
+    font-weight:600;
+    color:#12202a;
+    margin-bottom:12px;
+  }
+
+  ul.choices{
+    list-style:none;
+    margin:0;
+    padding:0;
+  }
+
+  ul.choices li{
+    background:#fbfdff;
+    border:1px solid #eef6fb;
+    padding:12px 14px;
+    border-radius:10px;
+    margin-bottom:10px;
+    cursor:pointer;
+    transition:all .18s ease;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+
+  ul.choices li:hover{ transform:translateY(-2px); box-shadow:0 6px 16px rgba(18,32,42,0.04) }
+
+  .choice-letter{
+    min-width:30px;
+    height:30px;
+    border-radius:8px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:#f1f6fb;
+    color:var(--accent);
+    font-weight:700;
+  }
+
+  .choice-text{ flex:1; color:#12202a; font-size:15px }
+
+  .controls{
+    display:flex;
+    gap:10px;
+    margin-top:12px;
+    align-items:center;
+  }
+
+  .btn{
+    border:0;
+    padding:10px 14px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:600;
+    font-size:14px;
+  }
+
+  .btn.primary{
+    background:var(--accent);
+    color:white;
+  }
+
+  .btn.secondary{
+    background:#eef6ff;
+    color:var(--accent);
+  }
+
+  .explanation{
+    background:var(--explain-bg);
+    border-left:4px solid var(--accent-2);
+    padding:12px;
+    border-radius:8px;
+    margin-top:12px;
+    display:none;
+  }
+
+  .explanation p{ margin:0; color:#123; font-size:14px }
+
+  .result{
+    margin-top:16px;
+    padding:14px;
+    border-radius:10px;
+    background:#f7fff4;
+    border:1px solid #e3f6d8;
+    color:#0a7a2a;
+    font-weight:700;
+    display:none;
+  }
+
+  /* matching + identification sections */
+  .review-sections{
+    margin-top:20px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+  }
+
+  .panel{
+    background:#fafcff;
+    border-radius:10px;
+    padding:14px;
+    border:1px solid #eef6ff;
+  }
+
+  .panel h3{ margin:0 0 8px 0; color:var(--accent) }
+  .panel ul{ margin:0; padding-left:18px; color:#123 }
+  .panel li{ margin-bottom:8px; }
+
+  footer{ margin-top:20px; text-align:center; color:var(--muted); font-size:13px }
+
+  /* correct/wrong color styles */
+  .correct{ background:var(--correct) !important; border-color: #9bd67d !important; }
+  .wrong{ background:var(--wrong) !important; border-color: #f7a597 !important; opacity:0.95; }
+
+  @media (max-width:760px){
+    .review-sections{ grid-template-columns:1fr; }
+    p.lead{ margin-left:0 }
+  }
+</style>
+</head>
+<body>
+  <div class="container" role="main">
+    <header>
+      <div class="logo">AP</div>
+      <div>
+        <h1>Araling Panlipunan — Pista sa Komunidad (Reviewer)</h1>
+        <p class="lead">45 tanong | Instant explanation pagkatapos pumili | Matching at Identification sa dulo</p>
+      </div>
+    </header>
+
+    <div class="meta">
+      <div class="chip">Paksa: Kasaysayan ng Pista</div>
+      <div class="chip">Antas: Aralin Panlipunan (Komunidad & Kultura)</div>
+      <div class="chip" id="score-chip">Iskor: 0</div>
+    </div>
+
+    <div class="progress-area">
+      <div class="progress-text" id="progress-text">Tanong 1 ng 45</div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+
+    <div class="quiz-card" id="quiz-card" aria-live="polite">
+      <div class="question" id="question">Loading...</div>
+      <ul class="choices" id="choices" role="list"></ul>
+
+      <div class="explanation" id="explanation"><p id="explain-text"></p></div>
+
+      <div class="controls">
+        <button class="btn secondary" id="prev-btn" style="display:none;">Nakaraan</button>
+        <button class="btn primary" id="next-btn">Susunod</button>
+      </div>
+
+      <div class="result" id="final-result"></div>
+    </div>
+
+    <!-- Matching & Identification -->
+    <div class="review-sections" id="review-sections" style="display:none;">
+      <div class="panel" id="matching-panel">
+        <h3>🔗 Matching Type</h3>
+        <p>Itugma ang Hanay A sa tamang sagot sa Hanay B. (Sagutin sa papel o i-copy ang sagot dito.)</p>
+        <strong>Hanay A</strong>
+        <ul>
+          <li>1. Pista</li>
+          <li>2. Prusisyon</li>
+          <li>3. Flores de Mayo</li>
+          <li>4. San Isidro Labrador</li>
+          <li>5. Banderitas</li>
+        </ul>
+        <strong>Hanay B</strong>
+        <ul>
+          <li>A. Pagpaparangal sa patron ng bayan</li>
+          <li>B. Palamuti ng kalye tuwing pista</li>
+          <li>C. Panrelihiyosong paglalakad na karaniwang may imahe</li>
+          <li>D. Pagdiriwang tuwing Mayo bilang pasasalamat sa ani</li>
+          <li>E. Debosyonal na selebrasyon para sa Birheng Maria</li>
+        </ul>
+        <p style="margin-top:8px;"><em>Mga sagot: 1-A, 2-C, 3-E, 4-D, 5-B</em></p>
+      </div>
+
+      <div class="panel" id="identify-panel">
+        <h3>🧾 Identification (Mga Sagot)</h3>
+        <ul>
+          <li><strong>Patron</strong> — ang santo o santa na ginugunita sa pista</li>
+          <li><strong>Prusisyon</strong> — paglalakad ng imahe o relic bilang debosyon</li>
+          <li><strong>Flores de Mayo</strong> — selebrasyon tuwing Mayo bilang parangal kay Maria</li>
+          <li><strong>San Isidro Labrador</strong> — patron ng mga magsasaka</li>
+          <li><strong>Banderitas</strong> — makukulay na banderola bilang palamuti sa pista</li>
+        </ul>
+      </div>
+    </div>
+
+    <footer>
+      <small>Inilagay: Interactive Reviewer — Araling Panlipunan (Kasaysayan ng Pista sa Komunidad)</small>
+    </footer>
+  </div>
+
+<script>
+/*
+  45 QUESTIONS: All about "Kasaysayan ng Pista sa Komunidad" + kaugnay na kultura/tradisyon
+  Each question object includes:
+    q: question text
+    choices: {a: "...", b: "...", c: "...", d: "..."}
+    a: correct letter (e.g., "a")
+    explain: short rationale/explanation to show after selection
+*/
+
+const questions = [
+  { q: "Ano ang ibig sabihin ng salitang 'pista' sa konteksto ng komunidad?",
+    choices:{a:"Pagdiriwang bilang paggunita o pasasalamat", b:"Isang uri ng paligsahan", c:"Pagtatayo ng gusali", d:"Opisyal na pulong ng barangay"},
+    a:"a",
+    explain:"Ang 'pista' o fiesta ay isang selebrasyon sa komunidad—karaniwan para parangalan ang patron na santo, magpasalamat, o magdiwang ng masaganang ani." },
+
+  { q: "Saan nagmula ang salitang 'pista' na ginamit sa Pilipinas?",
+    choices:{a:"Mula sa salitang Espanyol na 'fiesta'", b:"Mula sa salitang Malay", c:"Mula sa Ingles na 'party'", d:"Mula sa salitang Tsino"},
+    a:"a",
+    explain:"Ang salitang 'pista' ay hango sa Espanyol na 'fiesta' na dinala ng mga Espanyol noong kolonisasyon." },
+
+  { q: "Ano ang isa sa mga pangunahing layunin ng pista sa isang bayan o barangay?",
+    choices:{a:"Pagbuklod at pagpapatibay ng pagkakaisa sa komunidad", b:"Pagpapalabas ng pelikula", c:"Pagpapalago ng negosyo", d:"Pagpapatigil ng mga gawain sa edukasyon"},
+    a:"a",
+    explain:"Bukod sa relihiyosong aspeto, ang pista ay nagsisilbing pagkakataon para magtipon-tipon, magtulungan, at magdiwang ng komunidad." },
+
+  { q: "Alin sa mga sumusunod ang karaniwang bahagi ng pagdiriwang ng pista?",
+    choices:{a:"Misa, prusisyon, palaro, at kainan", b:"Eksibisyon ng makinarya lamang", c:"Pormal na sesyon ng kongreso", d:"Pagtatanim ng puno lang"},
+    a:"a",
+    explain:"Karamihan sa pista ay may relihiyosong serbisyo (misa/prusisyon) at panlipunang aktibidad tulad ng palaro at handaan." },
+
+  { q: "Ano ang ipinapakita ng prusisyon sa konteksto ng pista?",
+    choices:{a:"Debosyon at pagpapakita ng pananampalataya ng mga tao", b:"Isang uri ng pag-audit", c:"Klaseng pampalakasan", d:"Pagpapakita ng bandang-koreograpiya lamang"},
+    a:"a",
+    explain:"Ang prusisyon ay paraan ng pampublikong debosyon—karaniwan kasama ang imahe o reliquia ng patron." },
+
+  { q: "Ano ang kultura o pagpapahalaga na pinapalago ng mga palamuti tulad ng banderitas sa pista?",
+    choices:{a:"Kasiyahan, kulay, at pagkakaisa ng komunidad", b:"Pagpapakita ng negosyo lang", c:"Epekto ng teknolohiya", d:"Pag-alis ng tradisyon"},
+    a:"a",
+    explain:"Ang banderitas at iba pang dekorasyon ay nagdudulot ng kasiyahan at nag-uugnay sa mamamayan bilang bahagi ng selebrasyon." },
+
+  { q: "Anong pista ang kilala bilang selebrasyon tuwing Mayo na may kaugnayan sa pag-aalay ng bulaklak kay Birheng Maria?",
+    choices:{a:"Flores de Mayo", b:"Pasko ng Enero", c:"Sinulog", d:"Panagbenga"},
+    a:"a",
+    explain:"Ang Flores de Mayo ay buwanang selebrasyon tuwing Mayo na sinasagisag ang pagdalangin at pag-aalay ng bulaklak kay Maria." },
+
+  { q: "Sino ang karaniwang 'patron' o pinagpupurihan sa maraming pista sa Pilipinas?",
+    choices:{a:"Santo o Santa ng parokya", b:"Pangulo ng bansa", c:"Negosyante ng lugar", d:"Guro ng paaralan"},
+    a:"a",
+    explain:"Maraming pista ay nakatuon sa patron saint ng parokya bilang pasasalamat o paghingi ng proteksyon." },
+
+  { q: "Alin sa mga sumusunod ang pangunahing dahilan kung bakit nilaganap ng mga Espanyol ang pista sa Pilipinas?",
+    choices:{a:"Upang maisabuhay ang Kristiyanismo at gawing bahagi ng kultura ang relihiyosong pagdiriwang", b:"Upang magbenta ng kalakal", c:"Upang ipagbawal ang mga katutubo", d:"Upang magtayo ng pabrika"},
+    a:"a",
+    explain:"Ginamit ng mga Espanyol ang relihiyosong pagdiriwang bilang paraan ng pangangaral at pagkakaugnay sa bagong relihiyon." },
+
+  { q: "Anong mahalagang tungkulin ang ginagampanan ng lokal na pamahalaan sa pagdiriwang ng pista?",
+    choices:{a:"Mag-organisa at magpanatili ng kaayusan at seguridad", b:"Mamili sa lahat ng pagkain", c:"Mag-sponsor ng labanan", d:"Magbenta ng lupa"},
+    a:"a",
+    explain:"Ang barangay at lokal na pamahalaan ay tumutulong sa paghahanda, koordinasyon, at seguridad para sa maayos na pista." },
+
+  { q: "Ano ang ibig sabihin ng tradisyong 'bayanihan' na madalas makitang bahagi ng mga selebrasyon?",
+    choices:{a:"Pagtutulungan ng komunidad para sa isang layunin", b:"Paglahok sa isang sayaw", c:"Kompetisyon ng mga pamilya", d:"Pagkain ng libre lamang"},
+    a:"a",
+    explain:"Ang bayanihan ay tradisyon ng pagtutulungan — karaniwang makikita sa paghahanda at pag-oorganisa ng mga pagdiriwang." },
+
+  { q: "Sa anong paraan nakatutulong ang mga pista sa pagpapanatili ng kultura?",
+    choices:{a:"Pinapasa at ipinapakita ang tradisyon, musika, sayaw, at pagkain sa susunod na henerasyon", b:"Nilalagay ang kultura sa museo lamang", c:"Pinapalitan ang mga tradisyon ng banyaga agad", d:"Pinipigilan ang pagdiriwang ng pamilya"},
+    a:"a",
+    explain:"Sa pamamagitan ng praktika at selebrasyon, naipapamana ang mga lokal na kaugalian at sining." },
+
+  { q: "Ano ang karaniwang kaugnayan ng mga pista sa agrikultura?",
+    choices:{a:"Pagsasagawa ng pista bilang pasasalamat sa masaganang ani", b:"Pagpaparusa sa hindi nagtatanim", c:"Paglipat ng lupa", d:"Pagtanim ng kakaibang halaman lang"},
+    a:"a",
+    explain:"Maraming mga pista (hal., San Isidro) ay selebrasyon bilang pasasalamat para sa ani at proteksyon ng mga magsasaka." },
+
+  { q: "Alin sa sumusunod ang halimbawa ng ilaw o palamuti na karaniwang makikita sa panahon ng pista?",
+    choices:{a:"Banderitas at arko", b:"Traffic lights", c:"Street signs", d:"Factory banners"},
+    a:"a",
+    explain:"Ang banderitas at arko ay tradisyonal na dekorasyon na nagdadala ng kulay at saya sa kalsada noong pista." },
+
+  { q: "Bakit mahalaga ang pagkain (handaan) sa mga pista?",
+    choices:{a:"Nagbibigay ng okasyon para magsalo-salo at ipakita ang kultura sa pagluluto", b:"Upang magbenta ng pagkain ng mas mahal", c:"Upang magsanay lang sa pagluluto", d:"Walang partikular na dahilan"},
+    a:"a",
+    explain:"Ang handaan ay paraan ng pakikipagkapwa at pagpapakita ng hospitality ng komunidad." },
+
+  { q: "Ano ang karaniwang papel ng simbahan sa pista ng isang parokya?",
+    choices:{a:"Mag-organisa ng misa at prusisyon bilang sentrong relihiyosong gawain", b:"Magtinda ng souvenir", c:"Maging venue ng paligsahan lamang", d:"Magpatugtog ng modern music lamang"},
+    a:"a",
+    explain:"Ang simbahan ang sentro ng relihiyosong bahagi ng pista—misa at prusisyon kadalasan ang pangunahing gawain." },
+
+  { q: "Paano nakakatulong ang mga lokal na grupo (samahan) sa selebrasyon ng pista?",
+    choices:{a:"Sa pag-oorganisa ng cultural programs, palaro, at logistic support", b:"Sa pagkuha ng lahat ng lupa", c:"Sa pagtatayo ng malls", d:"Sa paglalagay ng taripa sa pagkain"},
+    a:"a",
+    explain:"Ang lokal na mga samahan (youth, women’s groups, cultural troupes) ang madalas namamahala sa iba't ibang aktibidad." },
+
+  { q: "Ano ang pinapahiwatig ng pagdadala ng imahe o relic sa prusisyon?",
+    choices:{a:"Debosyon, paghingi ng biyaya, at pag-alala sa buhay ng santo", b:"Senyal ng pag-aaway", c:"Pagpapakita ng kayamanan", d:"Pampaligsahan lamang"},
+    a:"a",
+    explain:"Ang imahe ay simbolo ng patron na inuugat sa debosyon ng mga mananampalataya." },
+
+  { q: "Anong aspeto ng pista ang makakatulong sa lokal na ekonomiya?",
+    choices:{a:"Pagdami ng turista at kalakalan dahil sa mga kainan at stalls", b:"Pagpapasara ng tindahan", c:"Pagbabawas ng produksyon", d:"Paglipat ng pamilihan sa ibang lugar"},
+    a:"a",
+    explain:"Ang pista ay karaniwang nakakaakit ng bisita at nagiging oportunidad para sa microentrepreneurs at lokal na merkado." },
+
+  { q: "Ano ang karaniwang ginagawa ng mga kabataan sa pista bilang bahagi ng tradisyon?",
+    choices:{a:"Sumasali sa pageants, cultural dances, at volunteer work", b:"Nananatili sa bahay lang", c:"Nagsasagawa ng away", d:"Nag-aaral lang ng leksyon"},
+    a:"a",
+    explain:"Malaking bahagi ng pista ang cultural performances at volunteer activities na kadalasang ginagawa ng kabataan." },
+
+  { q: "Sa anong paraan naiiba ang mga pista sa iba't ibang rehiyon ng Pilipinas?",
+    choices:{a:"Nagkakaiba ang tema, pagkain, at tradisyon depende sa lokal na kultura at kasaysayan", b:"Pareho ang bawat pista sa buong bansa", c:"Lahat ay sinusunod ang iisang awit lamang", d:"Walang pagkakaiba sa costume"},
+    a:"a",
+    explain:"Dahil sa pagkakaiba-iba ng etniko at kasaysayan, iba-iba rin ang lokal na bersyon ng pista." },
+
+  { q: "Anong mahalagang papel ang ginagampanan ng musika at sayaw sa pista?",
+    choices:{a:"Pagpapahayag ng kultura at pagdiriwang ng pagkakaisa", b:"Pampatulog ng mga bata", c:"Form ng propaganda", d:"Polusyon sa paligid"},
+    a:"a",
+    explain:"Ang mga sayaw at awit ay nagpapakita ng lokal na identidad at nagbibigay-aliw sa mga dumadalo." },
+
+  { q: "Alin ang halimbawa ng pista na may ugnayan sa isang sektor (magsasaka, mangingisda, atbp.)?",
+    choices:{a:"Pista ni San Isidro (magsasaka) o pista para sa patron ng mangingisda", b:"Pista ng mga inhinyero", c:"Pista ng mga mangangalakal sa lungsod lang", d:"Pista ng mga negosyanteng banyaga"},
+    a:"a",
+    explain:"Maraming pista ay tumutuon sa mga partikular na hanapbuhay (hal., patron saint ng mga magsasaka o mangingisda)." },
+
+  { q: "Ano ang kontribusyon ng mga migranteng Pilipino sa pagpapanatili ng pista kapag nasa ibang bansa?",
+    choices:{a:"Pag-oorganisa ng cultural fiestas at pagdadala ng tradisyon sa diaspora", b:"Paglimot sa kultura", c:"Pagbenta ng lupa", d:"Walang kontribusyon"},
+    a:"a",
+    explain:"Maraming OFW at migrant communities ang nagpapatuloy ng pista sa ibang bansa bilang pagpapakita ng kultura." },
+
+  { q: "Bakit dapat pangalagaan at pag-aralan ang kasaysayan ng pista sa komunidad?",
+    choices:{a:"Upang maunawaan ang pinanggalingan ng tradisyon at mapanatili ito para sa susunod na henerasyon", b:"Para itigil ang anumang pagdiriwang", c:"Para gawing komersyal ang lahat", d:"Para tanggalin ang relihiyon"},
+    a:"a",
+    explain:"Ang pag-aaral sa kasaysayan ng pista ay naglilinaw sa kahulugan nito at nagbibigay-motibasyon upang itaguyod ang kultura." },
+
+  { q: "Ano ang tinutukoy na 'patron' sa usapin ng pista?",
+    choices:{a:"Santo o santa na pinangungunahan ang selebrasyon", b:"Pangunahing negosyante sa bayan", c:"Alkalde lamang", d:"Kapitan ng barangay lang"},
+    a:"a",
+    explain:"Ang patron ay ang santo/santa o banal na figura na kadalasang inuugnay sa pista ng isang parokya." },
+
+  { q: "Alin sa mga sumusunod na gawain ay KADALASANG NAKABAHAGI ng pista para sa pagpapaalaala sa kasaysayan ng lugar?",
+    choices:{a:"Cultural exhibits at parades na nagpapakita ng kasaysayan at sining ng lugar", b:"Pagsara ng lahat ng paaralan nang walang dahilan", c:"Pagtatanim ng puno nang hindi nagpapakita ng kultura", d:"Pagbenta ng imported goods lamang"},
+    a:"a",
+    explain:"Maraming pista ang naglalaman ng eksibit at parada na nagpapakita ng lokal na kasaysayan at sining." },
+
+  { q: "Ano ang ginagawa ng mga elder o matatanda ng komunidad tuwing pista?",
+    choices:{a:"Nag-uugnay ng tradisyon, humahawak ng ritwal, at nagbibigay ng payo sa mga kabataan", b:"Hindi pumupunta sa pista", c:"Nagmamadali sa pag-alis", d:"Nagbabalik ng regalo lamang"},
+    a:"a",
+    explain:"Ang matatanda ay tagapangalaga ng tradisyon at kadalasang gumaganap ng mahahalagang bahagi sa ritwal." },
+
+  { q: "Sa modernong konteksto, paano nagbabago ang ilang aspekto ng pista?",
+    choices:{a:"Isinasama ang teknolohiya, turismo, at komersyal na aktibidad habang pinananatili ang tradisyon", b:"Lahat ay nawawala at hindi na ginagawa", c:"Nagiging eksklusibo lamang sa iilang tao", d:"Nagiging lihim na aktibidad"},
+    a:"a",
+    explain:"Marami sa pista ngayon ang nagko-combine ng tradisyon at modernong elements tulad ng light shows at tourism promotions." },
+
+  { q: "Ano ang maaaring epekto ng sobra o hindi maayos na komersyalisasyon ng pista?",
+    choices:{a:"Maaaring mawala ang tunay na kahulugan at maging puro negosyo na lamang", b:"Laging maganda lang ang epekto", c:"Mapapalitan agad ang patron saint", d:"Maiiwasan ang lahat ng turista"},
+    a:"a",
+    explain:"Kung sobra ang komersyal na pokus, may panganib na mawala ang relihiyoso at kultural na diwa ng pista." },
+
+  { q: "Ano ang dapat gawin ng komunidad upang mapanatili ang tradisyong pista habang sumusulong ang panahon?",
+    choices:{a:"I-dokumento, turuan ang kabataan, at isama ang lokal na kasaysayan sa programa", b:"Itago ang pista sa iilang tao lang", c:"Itigil ang lahat ng pagdiriwang", d:"Gawing lihim ang tradisyon"},
+    a:"a",
+    explain:"Ang pagdodokumento at edukasyon sa kabataan ay pangunahing paraan upang mapanatili ang kultura." },
+
+  { q: "Anong papel ang ginagampanan ng simbahan at relihiyon sa pagbuo ng many pista practices?",
+    choices:{a:"Nagbigay ng ritwal, debosyon, at petsa para sa pagdiriwang", b:"Walang papel ang simbahan", c:"Puro entertainment lang ang dala nito", d:"Nagpapalit ng pangalan ng bayan"},
+    a:"a",
+    explain:"Maraming pista ang nakaayos ayon sa liturgical calendar o patron feast days na ipinakilala ng simbahan." },
+
+  { q: "Ano ang ibig sabihin ng 'pagpaparangal' sa konteksto ng pista?",
+    choices:{a:"Pagbibigay-pugay sa patron, kasaysayan, o tagumpay ng komunidad", b:"Pagpapataw ng buwis", c:"Pagpaparusa sa mga hindi dumalo", d:"Pagbibigay ng multa"},
+    a:"a",
+    explain:"Ang pista ay pagkakataon para ipakita ang paggalang at pasasalamat—ito ang esensya ng pagpaparangal." },
+
+  { q: "Bakit mahalaga ang dokumentasyon (larawan, kwento, tala) ng pista para sa kasaysayan?",
+    choices:{a:"Upang mapanatili at maipasa ang katotohanan at alaala sa susunod na henerasyon", b:"Para itapon ang lumang tradisyon", c:"Para sa propaganda lamang", d:"Walang kabuluhan ang dokumentasyon"},
+    a:"a",
+    explain:"Ang dokumentasyon ay nagbibigay ng talaan para sa pag-aaral at pag-preserve ng kultura." },
+
+  { q: "Alin sa sumusunod ang halimbawa ng modernong adaptasyon sa pista na ginagawang mas accessible sa mas maraming tao?",
+    choices:{a:"Live streaming ng misa at cultural programs", b:"Paglilimita ng participation", c:"Pagbabalik lang sa sinaunang paraan", d:"Pagbabawal ng mga dekorasyon"},
+    a:"a",
+    explain:"Maraming parokya at komunidad ngayon ang nag-live stream para makaabot sa diaspora at mga hindi makadalo." },
+
+  { q: "Paano nakakatulong ang mga art at cultural groups sa pagyabong ng pista?",
+    choices:{a:"Nagpapakita ng lokal na sining, sayaw, at musika na nagpapatibay ng identidad", b:"Nagpapaliban ng pista", c:"Nagmementina ng katahimikan lamang", d:"Nagpapalit ng petsa ng pista"},
+    a:"a",
+    explain:"Ang lokal na mga grupo ay nagbibigay ng artistic content at nagpapalago ng pagkakakilanlan." },
+
+  { q: "Ano ang maiiwan na positibong epekto ng isang maayos at may malasakit na pagdiriwang ng pista?",
+    choices:{a:"Nagpapalakas ng ugnayan ng komunidad, nagpapasa ng kultura, at nakakatulong sa ekonomiya", b:"Laging nagdudulot ng gulo", c:"Nagiging dahilan ng pagkawala ng tradisyon", d:"Walang epekto sa komunidad"},
+    a:"a",
+    explain:"Kapag maayos, ang pista ay multipurpose: sosyal, kultural, ekonomiko, at espiritwal ang benepisyo." },
+
+  { q: "Ano ang maaaring gawin ng mga paaralan upang suportahan ang pag-aaral tungkol sa pista?",
+    choices:{a:"Magtalaga ng proyekto tungkol sa lokal na pista at mag-imbita ng resource persons", b:"Ipagbawal ang diskusyon sa pista", c:"Ipaliban lahat ng klase tuwing pista", d:"Gumawa ng commercial lamang"},
+    a:"a",
+    explain:"Ang edukasyon sa paaralan ay susi para maipasa ang kahalagahan ng pista sa kabataan." },
+
+  { q: "Sa konteksto ng komunidad, bakit mahalaga ang pagkakaroon ng malinaw na schedule at koordinasyon para sa pista?",
+    choices:{a:"Upang maiwasan ang abala, magplano ng seguridad, at masiguro ang maayos na daloy ng aktibidad", b:"Upang makapagbenta ng sobrang ticket", c:"Upang iwasan ang sinuman na dumalo", d:"Upang itago ang aktibidad sa iilan lang"},
+    a:"a",
+    explain:"Organisasyon at koordinasyon ay mahalaga para sa kaligtasan at tagumpay ng okasyon." },
+
+  { q: "Ano ang papel ng mga manunulat at lokal na media sa pagpapalaganap ng kaalaman tungkol sa pista?",
+    choices:{a:"Mag-uulat ng kasaysayan, iskedyul, at mga tampok na gawain para sa mas malawak na kaalaman", b:"Laging sisiraan ang pista", c:"Hindi dapat mag-ulat ng pista", d:"Lahat ng balita ay komersyal lamang"},
+    a:"a",
+    explain:"Ang media at manunulat ang nagtutulong mag-dokumenta at magsabog ng impormasyon tungkol sa selebrasyon." },
+
+  { q: "Paano makakatulong ang turismo sa pagpapanatili o pagyabong ng pista?",
+    choices:{a:"Nagbibigay ng suporta sa ekonomiya at nagpapakilala ng lokal na kultura sa labas ng komunidad", b:"Lagi itong nakakasira sa tradisyon", c:"Hindi nakakatulong sa ekonomiya", d:"Laging nagdudulot ng polusyon lamang"},
+    a:"a",
+    explain:"Responsible tourism ay makakatulong sa pag-sustain at pagpapalago ng festival kapag pinagplanuhan nang maayos." },
+
+  { q: "Ano ang isang etikal na konsiderasyon kapag nagpo-promote ng pista bilang produkto ng turismo?",
+    choices:{a:"Panatilihin ang respeto at kahalagahan ng kultura sa halip na gawing puro komersyo", b:"Gamitin lahat ng tradisyon para pagkakitaan lang", c:"Iwasan ang paglahok ng lokal", d:"Baguhin ang ritwal ayon sa turista"},
+    a:"a",
+    explain:"Mahalaga na hindi mawawala ang tunay na diwa at dapat igalang ang pinagmulan ng tradisyon." },
+
+  { q: "Paano ninanais ng aralin na panatilihin ang pista sa hinaharap?",
+    choices:{a:"Sa pamamagitan ng edukasyon, dokumentasyon, at pagtutulungan ng komunidad", b:"Sa pamamagitan ng pag-aalis ng tradisyon", c:"Sa pag-enforce ng batas na ipagbawal ang pista", d:"Sa paglilikas ng lahat ng tao"},
+    a:"a",
+    explain:"Ang kombinasyon ng edukasyon at praktikal na aksyon mula sa komunidad ang susi sa pagpapanatili ng pista." },
+
+  { q: "Ano ang pinaka-maikling paglalarawan ng kahalagahan ng pista sa kultura ng Pilipino?",
+    choices:{a:"Sagisag ng pagkakaisa, pananampalataya, at kultura na dapat ipagmalaki", b:"Simpleng dahilan lamang para magbakasyon", c:"Pulong ng pamahalaan", d:"Komersyal na palabas lamang"},
+    a:"a",
+    explain:"Ang pista ay pundasyon ng lokal na identidad—nag-uugnay sa espiritwal at sosyal na aspeto ng buhay Pilipino." }
+]; // end questions (45)
+
+// State variables
+let current = 0;
+let score = 0;
+let shuffled = [];
+
+// shuffle function (Fisher-Yates)
+function shuffleArray(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Initialize quiz
+function initQuiz() {
+  shuffled = shuffleArray(questions);
+  current = 0;
+  score = 0;
+  document.getElementById('score-chip').textContent = `Iskor: ${score}`;
+  showQuestion();
+}
+function showQuestion() {
+  const qObj = shuffled[current];
+  document.getElementById('question').textContent = qObj.q;
+  const choicesList = document.getElementById('choices');
+  choicesList.innerHTML = '';
+  // Build choices in order a-d
+  ['a','b','c','d'].forEach(letter=>{
+    if (!qObj.choices[letter]) return;
+    const li = document.createElement('li');
+    li.setAttribute('data-letter', letter);
+    // letter badge
+    const spanLetter = document.createElement('div');
+    spanLetter.className = 'choice-letter';
+    spanLetter.textContent = letter.toUpperCase();
+    // text
+    const spanText = document.createElement('div');
+    spanText.className = 'choice-text';
+    spanText.textContent = qObj.choices[letter];
+    li.appendChild(spanLetter);
+    li.appendChild(spanText);
+
+    // click handler
+    li.addEventListener('click', ()=> handleSelect(letter, li, qObj));
+    choicesList.appendChild(li);
+  });
+
+  // reset explanation area
+  const explainBox = document.getElementById('explanation');
+  explainBox.style.display = 'none';
+  document.getElementById('explain-text').textContent = '';
+  updateProgress();
+  // prev button visibility
+  document.getElementById('prev-btn').style.display = current>0 ? 'inline-block' : 'none';
+}
+
+function updateProgress(){
+  const total = shuffled.length;
+  document.getElementById('progress-text').textContent = `Tanong ${current+1} ng ${total}`;
+  const pct = Math.round(((current+1)/total)*100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+function handleSelect(letter, liElement, qObj){
+  // disable further clicks
+  document.querySelectorAll('#choices li').forEach(li=>{
+    li.style.pointerEvents = 'none';
+  });
+
+  const correct = qObj.a;
+  const explainBox = document.getElementById('explanation');
+  const explainText = document.getElementById('explain-text');
+
+  // highlight correct choice
+  document.querySelectorAll('#choices li').forEach(li=>{
+    const l = li.getAttribute('data-letter');
+    if (l === correct) {
+      li.classList.add('correct');
+    }
+  });
+
+  // if wrong selection, mark it wrong
+  if (letter !== correct) {
+    liElement.classList.add('wrong');
+  } else {
+    score++;
+    document.getElementById('score-chip').textContent = `Iskor: ${score}`;
+  }
+
+  // show explanation immediately
+  explainText.textContent = qObj.explain || '';
+  explainBox.style.display = 'block';
+
+  // allow pressing Next to proceed; also auto-scroll to explanation (mobile)
+  explainBox.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+// Next and Prev buttons
+document.getElementById('next-btn').addEventListener('click', ()=>{
+  // if last question, show result and review sections
+  if (current < shuffled.length - 1) {
+    current++;
+    showQuestion();
+  } else {
+    // finish
+    finishQuiz();
+  }
+});
+
+document.getElementById('prev-btn').addEventListener('click', ()=>{
+  if (current > 0) {
+    current--;
+    showQuestion();
+  }
+});
+
+function finishQuiz(){
+  // hide quiz card choices area
+  document.getElementById('quiz-card').style.display = 'none';
+  // show final result panel in same place
+  const parent = document.querySelector('.container');
+  const resultDiv = document.getElementById('final-result');
+  resultDiv.style.display = 'block';
+  resultDiv.textContent = `Tapos na! Ang iyong iskor ay ${score} / ${shuffled.length} (${Math.round((score/shuffled.length)*100)}%)`;
+  // show review sections
+  document.getElementById('review-sections').style.display = 'grid';
+  // scroll to result
+  resultDiv.scrollIntoView({behavior:'smooth'});
+}
+
+// initialize on load
+window.addEventListener('load', initQuiz);
+</script>
+</body>
+</html>
